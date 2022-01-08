@@ -1,0 +1,224 @@
+﻿<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>客服系统</title>
+    <meta name="keywords" content="智能客服系统">
+    <meta name="description" content="智能客服系统">
+    <link rel="shortcut icon" href="static/picture/favicon.ico">
+    <link rel="stylesheet" href="static/css/style.css">
+    <script src="static/js/jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+    <div id="motai">
+        <div id="motaiback">
+        </div>
+    </div>
+    <div class="chatBox" ref="chatBox">
+        <div class="mohu"></div>
+        <div class="chatBox-head"
+            style="background-image: linear-gradient(to right, rgb(0, 172, 243), rgb(1, 227, 124));">
+            <div class="chatBox-head-one">
+                <div class="chat-return" id="home" title="返回首页"> 首页</div>
+                智能客服
+                <div class="chat-close" title="关闭本页面" onclick="window.close();">关闭</div>
+            </div>
+            <div class="chatBox-head-two" style="display:none">
+                <div class="chat-return" id="return" title="返回客服列表" onclick="returnList()">返回</div>
+                <div class="chat-people">
+                    <div class="ChatInfoHead">
+                        <img src="static/picture/1.png" id="aver" alt="" />
+                    </div>
+                    <div class="ChatInfoName">智能客服</div>
+                </div>
+                <div class="chat-close" title="关闭本页面" onclick="window.close();"> 关闭</div>
+            </div>
+        </div>
+        <div class="chatBox-info" style="width: 100%;">
+            <div class="chatBox-list" ref="chatBoxlist">
+                <div class="chat-list-people" id="kflist" onclick="initzx()">
+                    <div><img src="static/picture/1.png" id="aver" alt="" /></div>
+                    <div class="chat-name">
+                        <p>智能客服1</p>
+                    </div>
+                    <div class="message-num">咨询</div>
+                </div>
+                <div class="chat-list-people" id="kflist" onclick="initzx()">
+                    <div><img src="static/picture/2.png" id="aver" alt="" /></div>
+                    <div class="chat-name">
+                        <p>智能客服2</p>
+                    </div>
+                    <div class="message-num" onclick="initzx()">咨询</div>
+                </div>
+            </div>
+            <div class="chatBox-kuang" id="chatBoxkuang" style="display:none">
+                <div class="chatBox-content">
+                    <div class="chatBox-content-demo" id="chatBox-content-demo">
+                        <div style="margin-top:15"></div>
+
+                    </div>
+                    <div class="success">
+                    </div>
+                </div>
+                <div class="chatBox-send" id="chatSend">
+                    <input id="textarea" type="text" placeholder="请用一句话简单明了地描述您的问题">
+                    <textarea id="textToSend" type="text" placeholder="请用一句话简单明了地描述您的问题"
+                        onkeypress="onkey(event)"></textarea>
+                    <button id="sendinput" class="btn-default-styles" onclick="send()">发送
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="rightinfo" class="rightinfo" style="display: none;">
+            <div class="rightinfoimg">
+                <div class="rightinfoav" title="点击查看高清头像"></div>
+            </div>
+            <div class="rightinfotextuse">
+                <div>
+                    <span>客服MM</span><a target="_blank" title="客服妹妹"><em></em></a><br>
+                    <a target="_blank" title="智能客服">
+                        <li>智能客服</li>
+                    </a>
+                </div>
+            </div>
+            <div class="rightinfotext">
+                <div class="rightinfotitle">
+                    <span>客服系统</span>
+                    <a target="_blank" title="程序设计实践大作业">
+                        <li></li>
+                    </a>
+                </div>
+                <div class="rightinfoname">
+                    <span>北京邮电大学</span>
+                    <p>地址：北师大对面<br>网址：www.bupt.edu.cn<br>邮箱：327582@qq.com</p>
+                </div>
+            </div>
+            <div class="rightinfofooter">
+                <a target="_blank" title="BUPT">
+                </a><a target="_blank" title="BUPT">BUPT</a>
+            </div>
+        </div>
+    </div>
+    <div class="common-footer">
+        <div class="footer-content">
+            <span> Powered by 韩世民 V1.0 &nbsp;&nbsp;| &nbsp;
+                Copyright © <a target="_blank">bupt</a>.&nbsp;&nbsp;| &nbsp;<a
+                    href="http://wpa.qq.com/msgrd?v=3&uin=327582&site=qq&menu=yes" id="PCname"
+                    target="_blank">姓名:韩世民</a></span>
+        </div>
+    </div>
+    <audio id="audio" autoplay="autoplay" src=""></audio>
+
+    <script type='text/javascript' src='static/js/function.js'></script>
+    <script type='text/javascript' src='static/js/canvas-nest.js' color='255,255,255' zIndex='-1' opacity='1'
+        count='99'></script>
+
+    <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        var socket;
+        var current = 0;
+        var total;
+        var beforetime;
+
+        function connect() {
+            var host = "ws://127.0.0.1:9999/";
+
+            socket = new WebSocket(host);
+            try {
+
+                socket.onopen = function (msg) {
+                    //alert("连接成功！");
+                };
+
+                socket.onmessage = function (msg) {
+                    if (typeof msg.data == "string") {
+                        displayContent(decodeURI(msg.data));
+                    }
+                    else {
+                        alert("非文本消息");
+                    }
+                };
+
+                socket.onerror = function (error) { alert("Error：" + error.name); };
+
+                socket.onclose = function (msg) {
+                    //关闭
+                };
+            }
+            catch (ex) {
+                log(ex);
+            }
+        }
+
+        async function send() {
+            var str = $("textToSend").value;
+            if (str != "") {
+                socket.send(encodeURI(str));
+                $("textToSend").value = "";
+                creatReceiver(str);
+            } else {
+                alert("发送内容不能为空！");
+            }
+
+
+
+        }
+        function creatSender(str) {
+            $('chatBox-content-demo').insertAdjacentHTML('beforeend', '<div class="sender"><div> <img src="static/picture/1.png"> </div> <div> <div class="left_triangle"></div>  <span>' + str + '</span></div></div>');
+            $('chatBox-content-demo').scrollTop = $('chatBox-content-demo').scrollHeight;
+        }
+        function creatReceiver(str) {
+            $('chatBox-content-demo').insertAdjacentHTML('beforeend', '<div class="receiver"><div><img src="static/picture/2.png"></div><div> <div class="right_triangle"></div> <span>' + str + '</span></div></div>');
+            $('chatBox-content-demo').scrollTop = $('chatBox-content-demo').scrollHeight;
+        }
+
+        window.onbeforeunload = function () {
+            try {
+                socket.close();
+                socket = null;
+            }
+            catch (ex) {
+            }
+        };
+
+        function $(id) { return document.getElementById(id); }
+
+        Date.prototype.Format = function (fmt) { //author: meizz
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds() //毫秒
+            };
+            if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+
+        function displayContent(msg) {
+            //$("txtContent").value += "\r\n" + new Date().Format("yyyy/MM/dd hh:mm:ss") + ":  " + msg;
+            if (msg.substr(0, 10) == "2019211496") {
+                $("PCname").innerHTML = msg.substring(10);
+            } else {
+                creatSender(msg);
+            }
+
+        }
+        function onkey(event) { if (event.keyCode == 13) send(); }
+        connect();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,34 @@
+Step welcome
+	Speak $name  ，您好，请问有什么可以帮您？
+	Listen 20
+	Branch 投诉 complain
+	Branch 账单 bill
+	Silence silence
+	Default default
+Step complain
+	Speak 请提出您宝贵的建议。
+	Listen 15
+	Speak 您的意见是我们改进工作的动力，请问您还有什么补充？
+	Listen 50
+	Default thanks
+Step thanks
+	Speak 感谢您的来电，再见
+	Exit
+Step bill
+	Speak 您的本月账单是$amount元，请问您还有什么补充？
+	Listen 15
+	Default thanks
+Step silence
+	Speak 听不清，请您大声一点可以吗
+	Listen 10
+	Branch 投诉 complain
+	Branch 账单 bill
+	Silence silence
+	Default default
+Step default
+	Speak 很抱歉，我没有听懂您说的话，能请您再说一遍吗
+	Listen 10
+	Branch 投诉 complain
+	Branch 账单 bill
+	Silence silence
+	Default default
